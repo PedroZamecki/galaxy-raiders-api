@@ -126,6 +126,22 @@ class GameEngineTest {
   }
 
   @Test
+  fun `it generate an explosion when colliding`() {
+    // Degenerate scenario: a missile will collide with an asteroid and not generate an explosion
+    hardGame.field.createAsteroidAt()
+    hardGame.field.createMissileAt()
+
+    hardGame.handleCollisions()
+
+    assertAll(
+      "GameEngine should generate an explosion when colliding",
+      { assertEquals(1, hardGame.field.explosions.size) },
+      { assertEquals(0, hardGame.field.missiles.size) },
+      { assertEquals(0, hardGame.field.asteroids.size) },
+    )
+  }
+
+  @Test
   fun `it can move its space objects`() {
     hardGame.field.generateAsteroid()
     hardGame.field.generateMissile()

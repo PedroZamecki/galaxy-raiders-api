@@ -5,6 +5,7 @@ import galaxyraiders.ports.RandomGenerator
 import galaxyraiders.ports.ui.Controller
 import galaxyraiders.ports.ui.Controller.PlayerCommand
 import galaxyraiders.ports.ui.Visualizer
+import galaxyraiders.core.physics.Point2D
 import kotlin.system.measureTimeMillis
 
 const val MILLISECONDS_PER_SECOND: Int = 1000
@@ -34,6 +35,8 @@ class GameEngine(
   )
 
   var playing = true
+
+  var score = Score()
 
   fun execute() {
     while (true) {
@@ -89,6 +92,21 @@ class GameEngine(
         (first, second) ->
       if (first.impacts(second)) {
         first.collideWith(second, GameEngineConfig.coefficientRestitution)
+        // Caso os objetos sejam um Missile e um Asteroid
+        if (first is Missile && second is Asteroid) {
+          var meanPosition = (first.center.plus(second.center))
+          meanPosition = Point2D(
+            meanPosition.x / 2,
+            meanPosition.y / 2
+          )
+
+          this.score.addScore(second)
+
+          this.field.removeMissile(first)
+          this.field.removeAsteroid(second)
+
+          this.field.generateExplosion(meanPosition)
+        }
       }
     }
   }
